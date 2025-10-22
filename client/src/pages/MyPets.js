@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Container, Typography, Grid, Card, CardMedia, CardContent, Button, Box } from '@mui/material';
 import { pets } from '../utils/api';
 import { useAuth } from '../contexts/AuthContext';
@@ -8,11 +8,7 @@ const MyPets = () => {
   const { user } = useAuth();
   const [myPets, setMyPets] = useState([]);
 
-  useEffect(() => {
-    fetchMyPets();
-  }, []);
-
-  const fetchMyPets = async () => {
+  const fetchMyPets = useCallback(async () => {
     try {
       if (!user) return setMyPets([]);
       const { data } = await pets.getMine();
@@ -20,7 +16,11 @@ const MyPets = () => {
     } catch (err) {
       toast.error('Failed to fetch your pets');
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    fetchMyPets();
+  }, [fetchMyPets]);
 
   const handleDelete = async (id) => {
     try {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Container,
   Grid,
@@ -23,11 +23,7 @@ const PetList = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchPets();
-  }, []);
-
-  const fetchPets = async () => {
+  const fetchPets = useCallback(async () => {
     try {
       // Exclude the current user's own pets from browse list when logged in
       const url = user ? `/pets?excludeMine=true` : '/pets';
@@ -38,7 +34,11 @@ const PetList = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    fetchPets();
+  }, [fetchPets]);
 
   const handleAdopt = async (petId) => {
     try {

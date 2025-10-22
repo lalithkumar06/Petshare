@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Container,
   Paper,
@@ -6,7 +6,6 @@ import {
   Grid,
   Card,
   CardMedia,
-  CardContent,
   Button,
   Box,
   Divider,
@@ -28,11 +27,7 @@ const PetDetails = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchPetDetails();
-  }, [id]);
-
-  const fetchPetDetails = async () => {
+  const fetchPetDetails = useCallback(async () => {
     try {
       const { data } = await pets.getOne(id);
       setPet(data);
@@ -42,7 +37,11 @@ const PetDetails = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id, navigate]);
+
+  useEffect(() => {
+    fetchPetDetails();
+  }, [fetchPetDetails]);
 
   const handleAdopt = async () => {
     try {
